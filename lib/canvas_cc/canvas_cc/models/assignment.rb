@@ -21,7 +21,8 @@ module CanvasCc::CanvasCC::Models
     def assignment_resource
       resource = CanvasCc::CanvasCC::Models::Resource.new
       resource.identifier = @identifier
-      resource.href = "#{resource.identifier}/assignment-#{CGI::escape(title.downcase.gsub(/\s/, '-'))}.html"
+      encoded = CGI::escape(title.downcase.gsub(/\s/, '-'))[0...235] # titles can include Unicode
+      resource.href = "#{resource.identifier}/assignment-#{encoded}.html"
       resource.type = LAR_TYPE
       resource.files = [resource.href, "#{resource.identifier}/#{ASSIGNMENT_SETTINGS_FILE}"]
 

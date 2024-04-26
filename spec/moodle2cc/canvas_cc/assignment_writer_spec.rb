@@ -70,6 +70,21 @@ describe CanvasCc::CanvasCC::AssignmentWriter do
     expect(html.at_css('meta[http-equiv]')[:content]).to eq 'text/html; charset=utf-8'
     expect(html.at_css('title').text).to eq 'Assignment: Assignment Title'
     expect(html.at_css('body').inner_html.to_s).to eq '<p>My Body Content</p>'
+  end
+
+  context 'with unicode title' do
+    let(:title) { '中文句子一旦编码就会消耗大量字符，所以在转换为磁盘上的文件名时请小心。' }
+    let(:filename) { "/assignment-%E4%B8%AD%E6%96%87%E5%8F%A5%E5%AD%90%E4%B8%80%E6%97%A6%E7%BC%96%E7%A0%81" \
+                     "%E5%B0%B1%E4%BC%9A%E6%B6%88%E8%80%97%E5%A4%A7%E9%87%8F%E5%AD%97%E7%AC%A6%EF%BC%8C%E6" \
+                     "%89%80%E4%BB%A5%E5%9C%A8%E8%BD%AC%E6%8D%A2%E4%B8%BA%E7%A3%81%E7%9B%98%E4%B8%8A%.html" }
+
+    it 'has valid filename' do
+      assignment.title = title
+
+      expect(CGI::escape(title.downcase.gsub(/\s/, '-')).size).to be > 255
+      expect(assignment.assignment_resource.href.size).to be <= 255
+      expect(assignment.assignment_resource.href).to eq filename
+    end
 
   end
 
